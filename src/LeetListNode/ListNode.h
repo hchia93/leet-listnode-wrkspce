@@ -1,6 +1,9 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <string>
+#include <format>
+#include <functional>
 
 /**
  * Definition for singly-linked list.
@@ -18,7 +21,6 @@ struct ListNode
 /**
  * Utility functions
  */
-
 ListNode* CreateFrom(std::vector<int>& intList)
 {
     if (intList.size() == 0)
@@ -37,39 +39,114 @@ ListNode* CreateFrom(std::vector<int>& intList)
     return head;
 }
 
-void PrintListNodeDetail(ListNode* node)
+void PrintListNodeDetail(const ListNode& node)
 {
-    if (node != nullptr)
-    {
-        std::cout << "Addr :    " << &node << std::endl;
-        std::cout << "Value:    " << node->val << std::endl;
-        std::cout<<  "NextAddr: " << &node->next << std::endl;
-    }
+    std::cout << "Value:    " << node.val << std::endl;
+    std::cout << "Addr :    " << &node << std::endl;
+    std::cout<<  "NextAddr: " << &node.next << std::endl;
 }
 
-void PrintListDetail(ListNode* head)
+void PrintListDetail(const ListNode* const head)
 {
     if (head != nullptr)
     {
-        ListNode* pCurrent = head;
+        const ListNode* pCurrent = head;
         while (pCurrent != nullptr)
         {
-            PrintListNodeDetail(pCurrent);
+            PrintListNodeDetail(*pCurrent);
             pCurrent = pCurrent->next;
         }
     }
 }
 
-void PrintListVisual(ListNode* head)
+void PrintListVisual(const std::string& name, const ListNode* head)
 {
+    std::cout << name << ":";
     if (head != nullptr)
     {
-        ListNode* pCurrent = head;
+        const ListNode* pCurrent = head;
         while (pCurrent != nullptr)
         {
-            std::cout << pCurrent->val << " -> ";
+            std::cout << pCurrent->val;
+            if (pCurrent->next != nullptr)
+            {
+                std::cout << " -> ";
+            }
+            else
+            {
+                std::cout << " :| ";
+            }
             pCurrent = pCurrent->next;
         }
         std::cout << std::endl;
     }
+
+    else
+    {
+        std::cout << " :| " << std::endl;
+    }
+}
+
+void PrintListVisual(const std::string& name, const ListNode* head, const ListNode* current)
+{
+    std::cout << name << ":";
+    if (head != nullptr)
+    {
+        const ListNode* pCurrent = head;
+        while (pCurrent != nullptr)
+        {
+            const bool showMarker = (current == pCurrent);
+            if (showMarker)
+            {
+                std::cout <<"[";
+            }
+
+            std::cout << pCurrent->val;
+
+            if (showMarker)
+            {
+                std::cout << "]";
+            }
+
+            if (pCurrent->next != nullptr)
+            {
+                std::cout << " -> ";
+            }
+            else
+            {
+                std::cout << " :| ";
+            }
+            
+            pCurrent = pCurrent->next;
+        }
+        std::cout << std::endl;
+    }
+    else
+    {
+        std::cout << " :| " << std::endl;
+    }
+}
+
+static void MakeTest(std::vector<int>& data, const char* testName, const std::function<ListNode* (ListNode*)>& testFunction)
+{
+    ListNode* pInstance = CreateFrom(data);
+    PrintListVisual(std::format("{}", testName), pInstance);
+
+    if (testFunction != nullptr)
+    {
+        ListNode* pResult = testFunction(pInstance);
+        PrintListVisual("Solution", pResult);
+
+        if (pResult != nullptr)
+        {
+            delete pResult;
+        }
+    }
+    else
+    {
+        delete pInstance;
+    }
+    
+
+    std::cout<<std::endl<<std::endl;
 }
